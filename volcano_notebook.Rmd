@@ -1,0 +1,83 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
+
+```{r}
+#volcano plot of new drdd data, colored by if up or down in ben's data
+
+WT_vs_drdd_21dpg_202311 <- read_excel("C:/Users/nsmoo/Desktop/Grad/RNA seq data/WT vs drdd 21dpg 202311.xlsx")
+df <- WT_vs_drdd_21dpg_202311
+
+title <- "21dpg colored by ben DEG_take2"
+
+p <- ggplot(data=df, aes(x=log2FoldChange, y=lg10, col=in_ben))+
+  geom_point() +
+  scale_color_manual(values=c("#0377bd", "grey", "#c62828")) +
+  scale_y_continuous(expand = c(0, 0)) +
+  ylab("-log10(p value)") +
+  ggtitle(title)
+  
+
+p + theme_classic()
+
+#ggsave(paste("DEGs WT vs drdd", title, ".png"), width=3.77, height=3.9)
+
+
+
+```
+
+
+```{r}
+#volcano plot of dR data, colored by if up or down in ben's data
+
+WT_v_dR_21dpg <- read_excel("C:/Users/nsmoo/Desktop/Grad/RNA seq data/WT vs dR 21dpg.xlsx")
+df <- WT_v_dR_21dpg
+
+title <- "dR_21dpg colored by ben DEG"
+
+p <- ggplot(data=df, aes(x=log2FoldChange, y=lg10, col=in_ben))+
+  geom_point() +
+  scale_color_manual(values=c("#0377bd", "grey", "#c62828")) +
+  scale_y_continuous(expand = c(0, 0)) +
+  ylab("-log10(p value)") +
+  ggtitle(title)
+  
+
+p + theme_classic()
+
+#ggsave(paste("DEGs WT vs drdd", title, ".png"), width=3.77, height=3.9)
+
+```
+
+
+```{r}
+#volcano plot of dR data, colored by if up or down in kat's data
+
+WT_v_dR_21dpg <- read_excel("C:/Users/nsmoo/Desktop/Grad/RNA seq data/WT vs dR 21dpg.xlsx")
+df <- WT_v_dR_21dpg
+
+title <- "dR_21dpg colored by kat DEG"
+
+p <- ggplot(data=df, aes(x=log2FoldChange, y=lg10, col=in_kat))+
+  geom_point() +
+  scale_color_manual(values=c("#0377bd", "grey", "#c62828")) +
+  scale_y_continuous(expand = c(0, 0)) +
+  ylab("-log10(p value)") +
+  ggtitle(title)
+  
+
+p + theme_classic()
+
+#ggsave(paste("DEGs WT vs drdd", title, ".png"), width=3.77, height=3.9)
+```
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.

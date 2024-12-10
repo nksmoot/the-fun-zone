@@ -1,0 +1,185 @@
+---
+title: "Untitled"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Plots
+
+```{r}
+library(ggplot2)
+data <- read.csv("~/Desktop/Images/Results-1_forR.csv")
+
+data.clean <- subset(data.tmm, Cell.Type == "Small" | Cell.Type == "GC" | Cell.Type == "SLGC")
+
+subset(data.12, Cell.Type == "Small" | Cell.Type == "GC" | Cell.Type == "SLGC")
+
+
+data.2613$Cell.Type <- sub("", "GC", data.2613$Cell.Type)    #change label
+#data.spch4$Breakdown <- sub("Mer", "M", data.spch4$Breakdown)               #change label
+data.1124$Cell.Type <- factor(data.1124$Cell.Type, levels = c("Pav", "SLGC", "Mer", "GMC", "GC", NA)) 
+
+data.121$Marker <- factor(data.121$Marker, levels = c("M", "H", "GMC"))    #set order of x-axis to mirror pseudotime
+
+table(data.tl3$Cell.Type)  #check # within each group for reference
+
+#plot au pixel intensity with regard to cell classifications
+ggplot(data.121, aes(x = Marker, y = Mean)) +
+  geom_jitter() + 
+  geom_boxplot(color = "darkgrey", outlier.shape = 32, alpha = 0) + 
+  xlab("Cell Classification") + ylab("Mean intensity (au)") +
+  labs(title = "12-1 TL1") +
+  theme_classic(base_size = 15) + theme(
+          axis.text=element_text(colour = "black"),
+          axis.line = element_line(colour = "black", size = 0.5),
+          axis.ticks = element_line(colour = "black", size = 0.5),
+          #axis.text.x = element_blank(),
+          #axis.title.x = element_blank(),
+            )
+ggsave("20200218_Class_vMeanIntensity.pdf", width = 3, height = 5)
+ggsave("12-1 TL1 marker not square.png", width = 6, height = 4)
+
+
+#Wilcoxon Rank Sum Test (non-parametric)
+wilcox.test()
+ 
+#t-test (parametric)
+t.test(Mean~Classify, data = data)
+
+
+#plot GC au pixel intensity (average of mean values for each nuclei) as a function of size (read out: distance between nuclei) - note that any rows missing information (NA) will be removed, as expected.
+ggplot(data.731, aes(x = Distance, y = Intensity)) + 
+  geom_point() +
+  #geom_smooth() + 
+  xlab("Relative stomata size (au)") +
+  ylab("Mean intensity (au)") +
+  labs(title = "7-3 TL1") + 
+  #annotate("text", x = 10, y = 1000, label = "rho = -.609 \np = 5.529e-06") +
+  theme_classic(base_size = 15) + theme(
+          axis.text=element_text(colour = "black"),
+          axis.line = element_line(colour = "black", size = 0.5),
+          axis.ticks = element_line(colour = "black", size = 0.5))
+ggsave("7-3 TL1 square stomata size.png", width = 4, height = 4)
+
+data_clean <- subset(data, Cell.Type == "Small")
+
+#sandbox for 12 small cell 
+ggplot(data.121, aes(x = Area, y = Mean, colour = Marker)) + 
+  geom_point() +
+  #geom_smooth() +
+  geom_hline(yintercept = 30, linetype = "dashed") + 
+  xlab("Area") +
+  ylab("intensity") +
+  labs(title = "12-1 TL1") + 
+  #annotate("text", x = 20, y = 100, label = "rho = .581 \np = 3.577e-05") +
+  theme_classic(base_size = 15) + theme(
+          axis.text=element_text(colour = "black"),
+          axis.line = element_line(colour = "black", size = 0.5),
+          axis.ticks = element_line(colour = "black", size = 0.5))
+ggsave("12-1 TL1 asc area whline.png", width = 6, height = 4)
+
+
+#bar graph???
+ggplot(data.200, aes(fill=Bucket, y=Mean, x=Cell.Type))+
+  geom_bar(position = "fill", stat = "identity")
+ggsave("12-1 TL1 bar graph fill.png", width = 6, height = 4)
+
+#coloring different lines 
+ggplot(data, aes(x = Distance, y = Intensity, color = Marker)) + 
+  geom_point() +
+  xlab("Relative stomata size\n(distance between nuclei, au)") +
+  ylab("Average mean intensity (au)") +
+  theme_classic(base_size = 15) + theme(
+          axis.text=element_text(colour = "black"),
+          axis.line = element_line(colour = "black", size = 0.5),
+          axis.ticks = element_line(colour = "black", size = 0.5))
+ggsave("7 comparison size_intensity.png", width = 8, height = 4)
+
+#Spearman's correlation test
+cor.test(data$Arean3, data$Samplen3, method = "spearman")
+
+cor.test(data$Area, data$Mean, method = "spearman")
+cor.test(data_clean$Circ., data_clean$Mean, method = "spearman")
+```
+
+
+
+```{r}
+data <- read.csv("~/Desktop/Images/Resultsv3_forR.csv")
+View(data)
+head(data)
+```
+
+
+Comparing only two groups
+```{r}
+ggplot(data, aes(x = Samplen2, y = Arean3)) +
+  geom_jitter() + 
+  geom_boxplot(color = "darkgrey", outlier.shape = 32, alpha = 0) + 
+  xlab("Cell classification") + ylab("Mean intensity (au)") +
+  theme_classic(base_size = 15) + theme(
+          axis.text=element_text(colour = "black"),
+          axis.line = element_line(colour = "black", size = 0.5),
+          axis.ticks = element_line(colour = "black", size = 0.5),
+          #axis.text.x = element_blank(),
+          #axis.title.x = element_blank(),
+            )
+
+#Wilcoxon Rank Sum Test (non-parametric)
+SampleA <- data[data$Samplen2 == "A" , ]
+SampleB <- data[data$Samplen2 == "B" , ]
+wilcox.test(SampleA$Arean3, SampleB$Arean3)
+
+#t-test (parametric)
+t.test(Cell.Type~Intensity, data = data11)
+
+
+ggplot(data, aes(x = Samplen2, y = Area)) +
+  geom_jitter() + 
+  geom_boxplot(color = "darkgrey", outlier.shape = 32, alpha = 0) + 
+  xlab("Cell classification") + ylab("Mean intensity (au)") +
+  theme_classic(base_size = 15) + theme(
+          axis.text=element_text(colour = "black"),
+          axis.line = element_line(colour = "black", size = 0.5),
+          axis.ticks = element_line(colour = "black", size = 0.5),
+          #axis.text.x = element_blank(),
+          #axis.title.x = element_blank(),
+            )
+```
+
+
+Comparing more than two groups
+```{r}
+ggplot(data, aes(x = Samplen3, y = Arean3)) +
+  geom_jitter() + 
+  geom_boxplot(color = "darkgrey", outlier.shape = 32, alpha = 0) + 
+  xlab("Cell classification") + ylab("Mean intensity (au)") +
+  theme_classic(base_size = 15) + theme(
+          axis.text=element_text(colour = "black"),
+          axis.line = element_line(colour = "black", size = 0.5),
+          axis.ticks = element_line(colour = "black", size = 0.5),
+          #axis.text.x = element_blank(),
+          #axis.title.x = element_blank(),
+            )
+
+#Kruskal-Wallis (non-parametric, extends two-sample Wilcoxon test)
+kruskal.test(Arean3 ~ Samplen3, data = data)
+kruskal.test(Cell.Type ~ Intensity, data = data11)
+
+#calculate pairwise comparisons
+
+data_filtered <- subset(data, Cell.Type != "Small?" & Cell.Type != "SLGC?", select = c("Cell.Type", "Mean"))
+
+pairwise.wilcox.test(data$Arean3, data$Samplen3, p.adjust = "bonferroni")
+pairwise.wilcox.test(data11$Mean, data11$Cell.Type, p.adjust = "bonferroni")
+
+#One-way ANOVA (parametric test, extends two-samples t-test)
+res.aov <- aov(Arean3 ~ Samplen3, data = data)
+summary(res.aov)
+#output includes the columns F value and Pr(>F) corresponding to the p-value of the test.
+```
+
+

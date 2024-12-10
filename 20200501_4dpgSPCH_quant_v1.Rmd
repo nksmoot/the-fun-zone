@@ -1,0 +1,356 @@
+---
+title: "analysis"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## SPCH expression
+
+## notes
+
+```{r}
+library(ggplot2)
+library(reshape2)
+library(ggpubr)
+
+my_theme <-  theme_classic(6) + theme(
+  legend.position = "none",
+  axis.text.x = element_text(angle = 60, hjust = 1),  #rotate & align axis
+  axis.text = element_text(size = 6),
+  axis.title.x = element_blank(),
+  axis.line = element_line(size = 0.2),
+  axis.ticks = element_line(size = 0.2),
+  strip.background = element_blank(),
+  strip.placement = "outside"
+)
+```
+
+# nuc intensity
+```{r}
+#load data
+data <- read.csv("~/Documents/Stanford Postdoc/Analyses/20200420_cdsSPCH Col background/4dpg/20200501_4dpgSPCH_quant_v1_exp_data_combo.csv")
+data
+```
+
+```{r}
+#data$sampleleaf <- paste(data$sample, data$leaf)
+#data <- data[data$sample != "gSPCH_3", ]   #remove sample with no index
+#colnames(data)[6:6] <- c("cell.type")
+
+#data <- data[data$cell2 %in% c("SLGC>P", "M","GMC", "GC"), ]
+data$cell2 <- factor(data$cell2, levels = c("SLGC>P", "M","GMC", "GC"))
+
+ggplot(data, aes(x = cell2, y = Mean)) +
+  geom_jitter(size = 0.1, alpha = 0.2, width = 0.05) +
+  #scale_colour_manual(values = c("black", "black", "black")) +
+  ylab("relative intensity") +
+    stat_summary(fun = "median", geom = "crossbar", alpha = 5, width = 0.5, size = 0.1, color = "black") +
+  my_theme + facet_wrap(.~geno, ncol = 2, scales = "free_y", strip.position = "top")
+
+ggsave("20200501_4dpgSPCH_quant_mean_v1.pdf", width = 1.5, height = 1)
+```
+
+cds
+```{r}
+ggplot(data[data$geno %in% "cdsSPCH", ], aes(x = cell2, y = Mean)) +
+  geom_jitter(size = 0.1, alpha = 0.2, width = 0.05) +
+  ylab("relative intensity") +
+    stat_summary(fun = "median", geom = "crossbar", alpha = 5, width = 0.5, size = 0.1, color = "black") +
+  my_theme + facet_wrap(filename~geno, ncol = 5, strip.position = "top") 
+
+ggsave("20200501_4dpgSPCH_quant_mean_cds_v2.pdf", width = 4, height = 1.75)
+```
+
+genomic
+```{r}
+ggplot(data[data$geno %in% "gSPCH_1", ], aes(x = cell2, y = Mean)) +
+  geom_jitter(size = 0.1, alpha = 0.2, width = 0.05) +
+  ylab("relative intensity") +
+    stat_summary(fun = "median", geom = "crossbar", alpha = 5, width = 0.5, size = 0.1, color = "black") +
+  my_theme + facet_wrap(filename~geno, ncol = 6, strip.position = "top") 
+
+ggsave("20200501_4dpgSPCH_quant_mean_genomic_v2.pdf", width = 5, height = 1.75)
+```
+
+boxplots
+```{r}
+#give.n <- function(x){
+#   return(c(y = max(x) + 0.05, label = length(x)))
+#}
+
+give.n <- function(x){
+   return(c(y = max(x) + 100, label = length(x)))
+}
+
+ggplot(data[data$cell2 %in% c("SLGC>P", "M","GMC"), ], aes(x = cell2, y = Mean)) +
+  geom_jitter(size = 0.1, alpha = 0.2, width = 0.05, color = "darkgrey") +
+  geom_boxplot(color = "black", width = 0.25, outlier.shape = 32, alpha = 0, lwd = 0.2) +
+  #scale_colour_manual(values = c("black", "black", "black")) +
+  ylab("relative intensity") +
+  #stat_summary(fun = "median", geom = "crossbar", alpha = 5, width = 0.5, size = 0.1, color = "black") +
+  stat_summary(fun.data = give.n, geom = "text", size = 1.5, color = "darkgrey") + 
+  my_theme + facet_wrap(.~geno, ncol = 2, scales = "free_y", strip.position = "top")
+
+ggsave("20200501_4dpgSPCH_quant_mean_noGC_v3.pdf", width = 1.5, height = 1.5)
+
+
+ggplot(data, aes(x = cell2, y = Mean)) +
+  geom_jitter(size = 0.1, alpha = 0.2, width = 0.05, color = "darkgrey") +
+  geom_boxplot(color = "black", width = 0.25, outlier.shape = 32, alpha = 0, lwd = 0.2) +
+  #scale_colour_manual(values = c("black", "black", "black")) +
+  ylab("relative intensity") +
+  #stat_summary(fun = "median", geom = "crossbar", alpha = 5, width = 0.5, size = 0.1, color = "black") +
+  stat_summary(fun.data = give.n, geom = "text", size = 1.5, color = "darkgrey") + 
+  my_theme + facet_wrap(.~geno, ncol = 2, scales = "free_y", strip.position = "top")
+
+ggsave("20200501_4dpgSPCH_quant_mean_wGC_v3.pdf", width = 1.5, height = 1.5)
+```
+
+w stats - v1
+```{r}
+my_comparisons <- list(c("SLGC>P","M"), c("SLGC>P","GMC"), c("SLGC>P", "GC"), c("M", "GMC"),c("M", "GC"), c("GMC", "GC"))
+
+ggplot(data, aes(x = cell2, y = Mean)) +
+  geom_jitter(size = 0.1, alpha = 0.2, width = 0.05, color = "darkgrey") +
+  geom_boxplot(color = "black", width = 0.25, outlier.shape = 32, alpha = 0, lwd = 0.2) +
+  #scale_colour_manual(values = c("black", "black", "black")) +
+  ylab("relative intensity") +
+  stat_compare_means(comparisons = my_comparisons, size = 2, method = "wilcox.test", color="dark gray",
+                     bracket.size = 0.2, tip.length = 0.02) +
+  my_theme + facet_wrap(.~geno, ncol = 2, scales = "free_y", strip.position = "top")
+ggsave("20200501_4dpgSPCH_quant_mean_boxplot_v4.pdf", width = 2.5, height = 2.5)
+```
+
+v2
+```{r}
+my_comparisons <- rev(list(c("SLGC>P", "GC"),c("M", "GC"),c("GMC", "GC")))
+
+ggplot(data, aes(x = cell2, y = Mean)) +
+  geom_jitter(size = 0.1, alpha = 0.2, width = 0.05, color = "darkgrey") +
+  geom_boxplot(color = "black", width = 0.25, outlier.shape = 32, alpha = 0, lwd = 0.2) +
+  #scale_colour_manual(values = c("black", "black", "black")) +
+  ylab("relative intensity") +
+  stat_compare_means(comparisons = my_comparisons, size = 3, method = "wilcox.test", color="dark gray",
+                     bracket.size = 0.2, tip.length = 0.02) +
+  my_theme + facet_wrap(.~geno, ncol = 2, scales = "free_y", strip.position = "top")
+ggsave("20200501_4dpgSPCH_quant_mean_boxplot_v5.pdf", width = 1.5, height = 1.5)
+```
+
+# frequency
+
+plot cdsSPCH first
+```{r}
+#based on calculations from data, create individual dataframes
+num <- seq(1,61, 1)
+df1 <- as.data.frame(num, row.names = NULL)
+df1$cell <- "SLGC>P"
+df1$frac <- "SLGC_exp"
+
+num <- seq(1,288,1)
+df2 <- as.data.frame(num, row.names = NULL)
+df2$cell <- "SLGC>P"
+df2$frac <- "SLGC_noexp"
+
+num <- seq(1,49, 1)
+df3 <- as.data.frame(num, row.names = NULL)
+df3$cell <- "M"
+df3$frac <- "M_exp"
+
+num <- seq(1,5,1)
+df4 <- as.data.frame(num, row.names = NULL)
+df4$cell <- "M"
+df4$frac <- "M_noexp"
+
+num <- seq(1,21, 1)
+df5 <- as.data.frame(num, row.names = NULL)
+df5$cell <- "GMC"
+df5$frac <- "GMC_exp"
+
+num <- seq(1,8,1)
+df6 <- as.data.frame(num, row.names = NULL)
+df6$cell <- "GMC"
+df6$frac <- "GMC_noexp"
+
+num <- seq(1,6, 1)
+df7 <- as.data.frame(num, row.names = NULL)
+df7$cell <- "GC"
+df7$frac <- "GC_exp"
+
+num <- seq(1,44,1)
+df8 <- as.data.frame(num, row.names = NULL)
+df8$cell <- "GC"
+df8$frac <- "GC_noexp"
+
+#combine dataframes & edit
+plot1 <- rbind(df1, df2, df3, df4, df5, df6, df7, df8)
+plot1$cell <- factor(plot1$cell, levels = c("SLGC>P", "M", "GMC", "GC"))
+
+unique(plot1$frac)
+plot1$geno <- "cdsSPCH"
+unique(plot1$frac)
+```
+```{r}
+plot1
+```
+
+
+
+plot gSPCH next
+```{r}
+#based on calculations from data, create individual dataframes
+num <- seq(1,91, 1)
+df1 <- as.data.frame(num, row.names = NULL)
+df1$cell <- "SLGC>P"
+df1$frac <- "SLGC_exp"
+
+num <- seq(1,279,1)
+df2 <- as.data.frame(num, row.names = NULL)
+df2$cell <- "SLGC>P"
+df2$frac <- "SLGC_noexp"
+
+num <- seq(1,62, 1)
+df3 <- as.data.frame(num, row.names = NULL)
+df3$cell <- "M"
+df3$frac <- "M_exp"
+
+num <- seq(1,1,1)
+df4 <- as.data.frame(num, row.names = NULL)
+df4$cell <- "M"
+df4$frac <- "M_noexp"
+
+num <- seq(1,30, 1)
+df5 <- as.data.frame(num, row.names = NULL)
+df5$cell <- "GMC"
+df5$frac <- "GMC_exp"
+
+num <- seq(1,2,1)
+df6 <- as.data.frame(num, row.names = NULL)
+df6$cell <- "GMC"
+df6$frac <- "GMC_noexp"
+
+num <- seq(1,5, 1)
+df7 <- as.data.frame(num, row.names = NULL)
+df7$cell <- "GC"
+df7$frac <- "GC_exp"
+
+num <- seq(1,103,1)
+df8 <- as.data.frame(num, row.names = NULL)
+df8$cell <- "GC"
+df8$frac <- "GC_noexp"
+
+#combine dataframes & edit
+plot2 <- rbind(df1, df2, df3, df4, df5, df6, df7, df8)
+plot2$cell <- factor(plot2$cell, levels = c("SLGC>P", "M", "GMC", "GC"))
+
+unique(plot2$frac)
+plot2$geno <- "gSPCH"
+unique(plot2$frac)
+```
+```{r}
+plot2
+```
+
+```{r}
+plot3 <- rbind(plot1, plot2)
+```
+
+```{r}
+col = c("darkgrey", "lightgrey", "mediumseagreen","lightgreen", "royalblue1",  "skyblue1", "purple","mediumpurple1")
+  # darkgrey, lightgrey
+  # "purple" for GC_exp
+  # "mediumpurple1" for GC_noexp
+  # "lightgreen" for "M_noexp
+  # "skyblue1" for GMC_noexp
+```
+
+plot all
+```{r}
+plot3$frac <- factor(plot3$frac, levels = c("GC_noexp", "GC_exp", "GMC_noexp","GMC_exp", "M_noexp", "M_exp", "SLGC_noexp", "SLGC_exp"))
+
+ggplot(plot3, aes(x = geno)) +
+  theme_classic(base_size = 6) +
+  theme(legend.title = element_blank(),
+        legend.key.size = unit(0.1, "lines"),
+        legend.margin=margin(0,0,0,0),
+        axis.title.x = element_blank(), 
+        axis.text = element_text(size = 6),
+        axis.text.x = element_text(angle = 60, hjust = 1),
+        axis.line = element_blank(),
+        #plot.margin = unit(c(0,0,0,0), "cm")
+  ) +
+  scale_fill_manual(values = rev(col)) +
+  ylab("fraction (field of view)") +
+  geom_bar(aes(fill = frac), position = "fill", lwd = 0.2, color = "white")
+ggsave("20200501_4dpgSPCH_quant_freq_v1.pdf", width = 1.1, height = 1.5)     #edit labels manually
+
+#plot individually & put next to dot plot?
+```
+
+plot with greyed out M>GMC>GC
+```{r}
+temp <- plot3
+temp$frac <- gsub("^M", "fav", temp$frac)     #^start and end$
+temp$frac <- gsub("^GMC", "fav", temp$frac)
+temp$frac <- gsub("^GC", "fav", temp$frac)
+unique(temp$frac) #[1] "SLGC_exp"   "SLGC_noexp" "fav_exp"     "fav_noexp"  
+temp$frac <- factor(temp$frac, levels = c("fav_noexp", "fav_exp", "SLGC_noexp", "SLGC_exp"))
+
+ggplot(temp, aes(x = geno)) +
+  theme_classic(base_size = 6) +
+  theme(legend.title = element_blank(),
+        legend.key.size = unit(0.1, "lines"),
+        legend.margin=margin(0,0,0,0),
+        axis.title.x = element_blank(), 
+        axis.text = element_text(size = 6),
+        axis.text.x = element_text(angle = 60, hjust = 1),
+        axis.line = element_blank(),
+        #plot.margin = unit(c(0,0,0,0), "cm")
+  ) +
+  scale_fill_manual(values = rev(c("darkgrey", "lightgrey", "darkgrey", "lightgrey"))) +
+  ylab("fraction (field of view)") +
+  geom_bar(aes(fill = frac), position = "fill", lwd = 0.2, color = "white")
+ggsave("20200501_4dpgSPCH_quant_freq_v2.pdf", width = 1.1, height = 1.5)     #edit labels manually
+```
+
+plot only colored M>GMC>GC
+```{r}
+ggplot(plot3[plot3$frac %in% c("GC_noexp", "GC_exp", "GMC_noexp","GMC_exp", "M_noexp", "M_exp"),], aes(x = geno)) +
+  theme_classic(base_size = 6) +
+  theme(legend.title = element_blank(),
+        legend.key.size = unit(0.1, "lines"),
+        legend.margin=margin(0,0,0,0),
+        axis.title.x = element_blank(), 
+        axis.text = element_text(size = 6),
+        axis.text.x = element_text(angle = 60, hjust = 1),
+        axis.line = element_blank(),
+        #plot.margin = unit(c(0,0,0,0), "cm")
+  ) +
+  scale_fill_manual(values = rev(col)) +
+  ylab("fraction (field of view)") +
+  geom_bar(aes(fill = frac), position = "fill", lwd = 0.2, color = "white")
+ggsave("20200501_4dpgSPCH_quant_freq_v3.pdf", width = 1.1, height = 1.5)     #edit labels manually
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

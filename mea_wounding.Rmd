@@ -1,0 +1,67 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
+
+```{r}
+plot(cars)
+```
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
+```{r}
+#plotting xu data of MEA expression after wounding
+
+
+xu_timelapse <- read.csv("C:/Users/nsmoo/Desktop/Grad/RNA seq data/xu_timelapse/xu_timelapse.csv")
+df <- data.frame(xu_timelapse$MEA, xu_timelapse$timepoint, xu_timelapse$pCL1)
+df
+
+library(ggplot2)
+
+p <- ggplot(data = df, aes(x=xu_timelapse.timepoint, y=xu_timelapse.MEA, group=1)) +
+  geom_line() +
+  geom_point() + 
+  scale_y_continuous(expand = c(0, 0)) +
+  ylab("MEA") +
+  xlab("time") + 
+  ggtitle("MEA expression after wounding") + 
+  ylim(0, 1) + 
+  scale_x_discrete(limits=df$xu_timelapse.timepoint)
+
+
+p + theme_classic()
+
+ggsave("MEA expression after wounding.png", width=15, height=4.5)
+```
+```{r}
+df.mea <- data.frame(MEA = xu_timelapse$MEA, 
+                     timepoints = xu_timelapse$timepoint)
+df.mea
+df.cl1 <- data.frame(CL1 = xu_timelapse$pCL1, 
+                     timepoints = xu_timelapse$timepoint)
+df.cl1
+
+both = merge(df.mea, df.cl1, by="timepoints")
+both
+
+both
+df.melted <- reshape2::melt(both, id.var='timepoints')
+df.melted
+new <- na.omit(df.melted)
+df.melted <- data.frame(new)
+df.melted
+
+p <- ggplot(df.melted, aes(x=timepoints, y=value, col=variable)) + geom_line()
+
+p + theme_classic()
+
+```
+

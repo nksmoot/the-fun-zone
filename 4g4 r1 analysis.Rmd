@@ -1,0 +1,189 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Cmd+Shift+Enter*. 
+
+```{r}
+library(ggplot2)
+down_blue = "#0377bd"
+up_red = "#c62828"
+purple0 = "#f3e5f5"
+purple1 = "#e1bee7"
+purple2 = "#ce93d8"
+teal0 = "#e0f2f1"
+teal1 = "#b2dfdb"
+teal2 = "#7fcbc4"
+teal3 = "#7fcbc4"
+teal4 = "#25a69a"
+teal5 = "#009688"
+
+sage1 = "#DFEBE3"
+yellow0 = "#FDF3E1"
+yellow1 = "#FBE7C3"
+yellow2 = "#F9DBA5"
+yellow3 = "#F5C369"
+
+pink0 = "#fce4ec"
+pink1 = "#f8bbd0"
+pink2 = "#f48fb1"
+
+```
+
+
+```{r}
+# The easiest way to get ggplot2 is to install the whole tidyverse:
+
+#DEGs in R1 vs other 
+install.packages("tidyverse")
+
+library(ggplot2)
+
+down_blue = "#0377bd"
+light_blue = "#81bbde"
+up_red = "#c62828"
+light_red = "#d15252"
+
+
+df <- data.frame(genotype=c("4g4", "4g4", "R1", "R1"), change=c("up", "down", "up", "down"), value=c(217, 424, 627, 825))
+df
+
+p<-ggplot(data=df, aes(x=genotype, y=value, fill=change)) + geom_bar(stat="identity", color="black", position=position_dodge()) + 
+  scale_y_continuous(expand = c(0, 0)) + 
+  ylab("Number of DEGs") + 
+  ggtitle("Differentially expressed genes")
+
+p + theme_classic() + scale_fill_manual(values=c(light_blue, light_red))
+
+ggsave("DEGS 4g4 vs R1.png", width=3, height=3)
+
+
+
+```
+```{r}
+genotypes<-c("1 4g4", "1 4g4", "4-1R0", "4-1R0", "4-2R0", "4-2R0", "4-2R1", "4-2R1", "4-3R0", "4-3R0", "4-4R0", "4-4R0", "4-4R1", "4-4R1")
+change<-rep(c("gain", "loss"), 7)
+values<-c(7461, 1295, 8148, 1539, 6048, 1730, 7995, 1835, 7233, 2300, 8040, 1618, 8480, 1583)
+
+df<-data.frame(genotypes, change, values)
+df
+
+purple0 = "#f3e5f5"
+purple1 = "#e1bee7"
+purple2 = "#ce93d8"
+p<-ggplot(data=df, aes(x=genotypes, y=values, fill=change)) + geom_bar(stat="identity", color="black", position=position_dodge()) + 
+  scale_y_continuous(expand = c(0, 0)) + 
+  ggtitle("DMRs in different regenerants (CG)") + 
+  ylab("Number of DMRs")
+
+p + theme_classic() + scale_fill_manual(values=c(sage1, yellow1))
+
+ggsave("gain_loss_DMRs_filtered.png", width=5, height=3)
+```
+
+Repeat for CHG: 
+```{r}
+genotypes<-c("1 4g4", "1 4g4", "4-1R0", "4-1R0", "4-2R0", "4-2R0", "4-2R1", "4-2R1", "4-3R0", "4-3R0", "4-4R0", "4-4R0", "4-4R1", "4-4R1")
+change<-rep(c("gain", "loss"), 7)
+values<-c(4339, 775, 7849, 767, 3746, 5346, 3650, 11720, 5667, 2531, 5701, 2531, 4933, 2743)
+
+df<-data.frame(genotypes, change, values)
+df
+
+
+p<-ggplot(data=df, aes(x=genotypes, y=values, fill=change)) + geom_bar(stat="identity", color="black", position=position_dodge()) + 
+  scale_y_continuous(expand = c(0, 0)) + 
+  ggtitle("DMRs in different regenerants (CHG)") + 
+  ylab("Number of DMRs")
+
+p + theme_classic() + scale_fill_manual(values=c(sage1, yellow1))
+
+ggsave("gain_loss_CHG_DMRs_filtered.png", width=5, height=3)
+```
+
+And for CHH: 
+```{r}
+install.packages('ggbreak')
+install.packages('patchwork')
+
+library(ggbreak)
+library(patchwork)
+
+genotypes<-c("1 4g4", "1 4g4", "4-1R0", "4-1R0", "4-2R0", "4-2R0", "4-2R1", "4-2R1", "4-3R0", "4-3R0", "4-4R0", "4-4R0", "4-4R1", "4-4R1")
+change<-rep(c("gain", "loss"), 7)
+values<-c(1000, 915, 13126, 261, 3557, 746, 676, 2648, 1844, 1570, 2646, 848, 1036, 1981)
+
+df<-data.frame(genotypes, change, values)
+df
+
+
+p<-ggplot(data=df, aes(x=genotypes, y=values, fill=change)) + geom_bar(stat="identity", color="black", position=position_dodge()) + 
+  scale_y_continuous(expand = c(0, 0)) + 
+  ggtitle("DMRs in different regenerants (CHH)") + 
+  ylab("Number of DMRs") 
+  #scale_y_break(c(6000, 12000))
+
+p + theme_classic() + scale_fill_manual(values=c(sage1, yellow1))
+
+ggsave("gain_loss_CHH_DMRs_break_filtered_2.png", width=5, height=3)
+```
+
+
+
+
+```{r}
+#hypocotyl regeneration to SIM direct, data as of 4/l6/24
+
+genotypes <- c("a DRDD", rep(c("b dme"), 3), rep(c("c rdd"), 4), rep(c("d drdd"), 4))
+values <- c(0, .2, 0, .02, .33, .063, .069, 0, .25, .054, .098, 0)
+values <- values*100
+df <- data.frame(genotypes, values)
+df
+
+p<-ggplot(data=df, aes(x=genotypes, y=values, fill=genotypes))  + 
+  scale_y_continuous(expand = c(0, 0), limits = c(0, 60)) +
+  stat_summary(aes(y = values), 
+               fun = "mean", geom = "bar", fill = teal0, color = teal5) + 
+  stat_summary(geom = "errorbar", color = teal5, width = .1) + 
+  geom_point(stat="identity", show.legend = FALSE, size = .5) + 
+  ylab("Percent of hypocotyls \nwhich regenerated a shoot") + 
+  ggtitle("Hypocotyl regeneration \non direct transfer to SIM") 
+
+p + theme_classic() 
+
+ggsave("hyp direct sim.png", width = 3, height = 3)
+
+#+ scale_fill_manual(values=c(purple2, purple0))
+
+
+
+```
+
+
+```{r}
+#looking at all contexts? 
+
+genotypes <- c(rep(c("preR"), 6), rep(c("4-1R0"), 6))
+values <- c(7461,	1295,	4339,	775,	1000,	915, 8148,	1539,	7849,	767,	13126, 261)
+change <- c(rep(c("gain", "loss"),6))
+context <- c(rep(c("CG", "CG", "CHG","CHG", "CHH", "CHH"),2))
+df<- data.frame(genotypes, values, change, context)
+df
+
+
+p <- ggplot(data=df, aes(x=genotypes, y=values, fill=context)) +
+  geom_bar(stat="identity", position=position_dodge())
+
+p + theme_classic()
+
+
+```
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Cmd+Option+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Cmd+Shift+K* to preview the HTML file). 
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.

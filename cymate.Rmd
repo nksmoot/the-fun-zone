@@ -1,0 +1,71 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Cmd+Shift+Enter*. 
+
+```{r}
+library(ggplot2)
+library(reshape2)
+
+
+
+
+
+```
+
+Importing data:
+```{r}
+library(readxl)
+practice_cymate <- read_excel("practice_cymate.xlsx")
+small_cymate <- read_excel("small_cymate.xlsx")
+View(small_cymate)
+View(practice_cymate)
+
+```
+
+Plotting: 
+```{r}
+df <- data.frame(practice_cymate)
+
+melted <- melt(df, id=c("Position", "Context"))
+melted
+
+df_small <- data.frame(small_cymate)
+melt_small <- melt(df_small, id=c("Position", "Context"))
+melt_small
+melt_small$variable <- factor(melt_small$variable, levels=c("perc_NM", "perc_M"))
+melt_small
+melt_small$color <- paste(melt_small$Context, melt_small$variable)
+melt_small$color <- factor(melt_small$color, levels=c("CG perc_NM", "CG perc_M", "CHG perc_NM", "CHG perc_M", "CHH perc_NM", "CHH perc_M"))
+
+melt_small
+
+
+ggplot(melt_small, aes(fill=color, y=value, x=as.character(Position))) + 
+  geom_bar(position="stack", stat="identity", color="#565656") + 
+  theme_classic() + 
+  scale_fill_manual(values=c(
+    "#EEDDDC", "#C87988",
+    "#dce9ec", "#6AA5AF", 
+    "#E9EAD2", "#8A8F42"
+  ))+ 
+  xlab("Cytosines") + ylab("Percent methylation") + 
+  scale_y_continuous(expand = c(0, 0)) 
+
+
+ggsave("sample_cymate_2.png", width=5, height=2.5)
+
+
+```
+
+
+
+
+
+
+
+

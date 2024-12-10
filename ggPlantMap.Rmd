@@ -1,0 +1,27 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+```{r}
+##install devtools (if you haven't already)
+install.packages("devtools")
+library(devtools)
+
+## Installing from a github respository
+install_github("leonardojo/ggPlantmap")
+```
+
+user guide
+https://github.com/leonardojo/ggPlantmap/blob/main/ggPlantmap.userguide.md
+
+
+```{r}
+library(ggPlantmap)
+head(ggPm.summary)
+ggPm.summary
+ggPm.At.roottip.crosssection
+ggPlantmap.plot(data=ggPm.At.flower.diagram)
+
+ggPlantmap.plot(data=ggPm.At.lateralroot.devseries)
+```
+

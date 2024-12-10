@@ -1,0 +1,126 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
+
+```{r}
+#histogram of scores
+
+library(ggplot2)
+
+teal1 = "#e0f2f1"
+teal2 = "#b2dfdb"
+teal6 = "#009688"
+teal8 = "#00796b"
+
+yellow0 = "#FDF3E1"
+yellow1 = "#FBE7C3"
+yellow2 = "#F9DBA5"
+yellow3 = "#F5C369"
+
+library(readr)
+df <- read_csv("C:/Users/nsmoo/Desktop/PMB 122 exam 1/exam_summary.csv")
+
+library(readxl)
+PMB122_grades_total <- read_excel("Desktop/Grad/PMB 122 exam 1/PMB122_grades_total.xlsx")
+
+library(readr)
+PMB122_grades_total_gg <- read_csv("/Users/nksmoot/Desktop/Grad/PMB 122 exam 1/PMB122_grades_total_gg.csv")
+
+
+df <- PMB122_grades_total_gg
+head(df)
+
+p <- ggplot(df, aes(x=exam_2) )+ 
+  geom_histogram(bins=25, colour=teal6, fill=teal2) + 
+  xlim(0, 340) + 
+  scale_y_continuous(expand = c(0, 0)) + 
+  ylab(" ") + xlab(" ") + ggtitle("Distribution of Exam 2 Scores")
+
+
+p + theme_classic()
+
+ggsave("distribution-exam2.png", width = 5, height = 4)
+
+```
+
+```{r}
+#final grade distribution
+
+head(df)
+df$Final_Grade <- df$Final_Grade * 100
+
+head(df)
+
+
+p <- ggplot(df, aes(x=Final_Grade) )+ 
+  geom_histogram(bins=20, colour=yellow3, fill=yellow1) + 
+  xlim(0, 105) + 
+  scale_y_continuous(expand = c(0, 0)) + 
+  ylab(" ") + xlab(" ") + ggtitle("Distribution of Final Grades")
+
+
+p + theme_classic()
+
+ggsave("final grade distribution.png", width = 5, height = 4)
+
+
+```
+
+
+
+
+```{r}
+#violin of questions
+df <- read_csv("C:/Users/nsmoo/Desktop/PMB 122 exam 1/Exam 1 Summary.csv")
+df
+
+
+library(readxl)
+df_2 <- read_excel("C:/Users/nsmoo/Desktop/PMB 122 exam 1/Exam 1 Summary.xlsx")
+
+library(readr)
+question_factor <- read_csv("C:/Users/nsmoo/Desktop/PMB 122 exam 1/question_factor.csv")
+head(question_factor)
+
+question_order <- c("Q1", "Q2", "Q3", "Q4", "Q5", "Q6", "Q7", "Q8", "Q9", "Q10", "Q11", "Q12", "Q13", "Q14", "Q15", "Q16", "Q17", "Q18", "Q19", "Q20", "Q21", "Q22", "Q23", "Q24", "Q25", "Q26", "Q27", "Q28", "Q29", "Q30")
+
+
+p <- ggplot(question_factor, aes(x=factor(question, level=question_order), y=score)) + 
+  geom_violin()
+
+p + theme_classic()
+
+ggsave("question distribution.png", width=10, height=2)
+
+
+teal1 = "#e0f2f1"
+teal2 = "#b2dfdb"
+teal6 = "#009688"
+teal8 = "#00796b"
+
+
+
+ggplot(question_factor, aes(x=factor(question, level=question_order), y=score)) + 
+  geom_violin(color = teal6, fill = teal1)+
+  theme_classic() + 
+  geom_point(size=.3, color = teal8) + 
+  geom_jitter(size = .3, color = teal8)  + 
+  xlab("Question") + ylab("Score Distribution")
+
+
+ggsave("question distribution point.png", width=10, height=2)
+
+```
+
+
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.

@@ -1,0 +1,217 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
+
+```{r}
+plot(cars)
+```
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
+```{r}
+#test
+
+if (!require(devtools)) install.packages("devtools")
+devtools::install_github("yanlinlin82/ggvenn")
+
+library("ggvenn")
+
+
+df <- data.frame(hello = c("hi", "buenos dias", "aloha"), 
+                 goodbye = c("toodaloo", "adios", "aloha"))
+
+df_2 <- data.frame(french = c("bonjour", "salut"))
+print(df_2)
+
+df_all <- data.frame(df[1], df_2)
+
+list = as.list(df)
+print(list)
+```
+
+
+```{r}
+
+library(readxl)
+#WT_vs_e2fabc <- read_excel("C:/Users/nsmoo/Desktop/Grad/RNA seq data/WT vs e2fabc.xlsx")
+#WT_vs_drdd_21dpg_202311 <- read_excel("C:/Users/nsmoo/Desktop/Grad/RNA seq data/WT vs drdd 21dpg 202311.xlsx")
+
+
+df_e2f_temp <- data.frame(WT_vs_e2fabc$`Upregulated DEGs` )
+new <- na.omit(df_e2f_temp)
+df_e2f <- data.frame(new)
+
+
+df_temp <- data.frame(WT_vs_drdd_21dpg_202311$`Upregulated DEGs`)
+new <- na.omit(df_temp)
+df_drdd <- data.frame(new)
+
+colnames(df_e2f)[1]="e2fabc_upregulated"
+colnames(df_drdd)[1]="drdd_upregulated"
+
+head(df_drdd, 10)
+
+list_1 = as.list(df_e2f[1])
+list_2 = as.list(df_drdd)
+print(list_2)
+
+list = c(list_1, list_2)
+print(list)
+
+
+
+
+library("ggvenn")
+ggvenn(list, fill_color = c(pink2, yellow2))
+
+ggsave("e2f vs drdd upregulated.png", width=7, height=7)
+```
+
+
+```{r}
+#Downregulated genes between e2fabc and drdd
+
+library(readxl)
+#WT_vs_e2fabc <- read_excel("C:/Users/nsmoo/Desktop/Grad/RNA seq data/WT vs e2fabc.xlsx")
+#WT_vs_drdd_21dpg_202311 <- read_excel("C:/Users/nsmoo/Desktop/Grad/RNA seq data/WT vs drdd 21dpg 202311.xlsx")
+
+
+df_e2f_temp <- data.frame(WT_vs_e2fabc$`Downregulate DEGS` )
+new <- na.omit(df_e2f_temp)
+df_e2f <- data.frame(new)
+
+
+df_temp <- data.frame(WT_vs_drdd_21dpg_202311$`Downregulate DEGS`)
+new <- na.omit(df_temp)
+df_drdd <- data.frame(new)
+
+colnames(df_e2f)[1]="e2fabc_downregulated"
+colnames(df_drdd)[1]="drdd_downregulated"
+
+list_1 = as.list(df_e2f[1])
+list_2 = as.list(df_drdd)
+list = c(list_1, list_2)
+
+library("ggvenn")
+ggvenn(list, fill_color = c(pink2, yellow2))
+
+ggsave("e2fabc vs drdd downregulated.png", width=7, height=7)
+
+```
+```{r}
+
+```
+
+```{r}
+#all DEG's grouped together???? 
+
+df_e2f_temp <- data.frame(WT_vs_e2fabc$`Upregulated DEGs`)
+new <- na.omit(df_e2f_temp)
+df_e2f_up <- data.frame(new)
+
+
+df_temp <- data.frame(WT_vs_drdd_21dpg_202311$`Upregulated DEGs`)
+new <- na.omit(df_temp)
+df_drdd_up <- data.frame(new)
+
+colnames(df_e2f_up)[1]="e2fabc_upregulated"
+colnames(df_drdd_up)[1]="drdd_upregulated"
+
+df_e2f_temp <- data.frame(WT_vs_e2fabc$`Downregulate DEGS`)
+new <- na.omit(df_e2f_temp)
+df_e2f_down <- data.frame(new)
+
+
+df_temp <- data.frame(WT_vs_drdd_21dpg_202311$`Downregulate DEGS`)
+new <- na.omit(df_temp)
+df_drdd_down <- data.frame(new)
+
+colnames(df_e2f_down)[1]="e2fabc_downregulated"
+colnames(df_drdd_down)[1]="drdd_downregulated"
+
+
+
+list_1 = as.list(df_e2f_up)
+list_2 = as.list(df_drdd_up)
+list_3 = as.list(df_e2f_down)
+list_4 = as.list(df_drdd_down)
+
+
+list = c(list_1, list_2, list_3, list_4)
+
+
+
+
+
+library("ggvenn")
+ggvenn(list, fill_color = c(pink2, yellow2, teal2, purple2))
+
+ggsave("overlap between all e2f and drdd DEG.png", width=7, height=7)
+```
+```{r}
+#Overlap between 21dpg samples, downregulated genes
+
+WT_vs_drdd_21dpg <- read_excel("C:/Users/nsmoo/Desktop/Grad/RNA seq data/WT vs drdd 21dpg.xlsx")
+
+
+df_old_temp <- data.frame(WT_vs_drdd_21dpg$`Downregulate DEGS`)
+new <- na.omit(df_old_temp)
+df_ben <- data.frame(new)
+
+
+df_temp <- data.frame(WT_vs_drdd_21dpg_202311$`Downregulate DEGS`)
+new <- na.omit(df_temp)
+df_kat <- data.frame(new)
+
+colnames(df_ben)[1]="ben_downregulated"
+colnames(df_kat)[1]="kat_downregulated"
+
+list_1 = as.list(df_ben)
+list_2 = as.list(df_kat)
+
+list = c(list_1, list_2)
+
+library("ggvenn")
+ggvenn(list, fill_color = c(pink2, yellow2))
+
+
+ggsave("ben vs kat 21dpg downregulated.png", width=7, height=7)
+
+```
+```{r}
+#Overlap between 21dpg samples, upregulated genes
+
+#WT_vs_drdd_21dpg <- read_excel("C:/Users/nsmoo/Desktop/Grad/RNA seq data/WT vs drdd 21dpg.xlsx")
+
+
+df_old_temp <- data.frame(WT_vs_drdd_21dpg$`Upregulated DEGs`)
+new <- na.omit(df_old_temp)
+df_ben <- data.frame(new)
+
+
+df_temp <- data.frame(WT_vs_drdd_21dpg_202311$`Upregulated DEGs`)
+new <- na.omit(df_temp)
+df_kat <- data.frame(new)
+
+colnames(df_ben)[1]="ben_upregulated"
+colnames(df_kat)[1]="kat_upregulated"
+
+list_1 = as.list(df_ben)
+list_2 = as.list(df_kat)
+
+list = c(list_1, list_2)
+
+library("ggvenn")
+ggvenn(list, fill_color = c(pink2, yellow2))
+
+ggsave("ben vs kat 21dpg upregulated.png", width=7, height=7)
+```
+
