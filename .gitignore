@@ -1,3 +1,5 @@
-*.bed
-*.csv
-*.tsv
+*
+!.gitignore
+!*.R
+!*.Rmd
+
